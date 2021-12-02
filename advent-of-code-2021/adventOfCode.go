@@ -2,6 +2,7 @@ package main
 
 import (
 	"advent-of-code-2021/day1"
+	"advent-of-code-2021/day2"
 	"fmt"
 )
 
@@ -20,6 +21,7 @@ type TaskResult struct {
 func main() {
 	execute(1, 1, day1.Part1)
 	execute(1, 2, day1.Part2)
+	execute(2, 1, day2.Part1)
 }
 
 func execute(day, part int, runnable fn) {

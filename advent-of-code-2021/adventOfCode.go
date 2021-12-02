@@ -31,11 +31,11 @@ func execute(day, part int, runnable fn) {
 
 func toResult(day, part int, result string) *TaskResult {
 	task := Task{
-		day: day,
+		day:  day,
 		part: part,
 	}
 	return &TaskResult{
-		task: &task,
+		task:   &task,
 		result: result,
 	}
 }

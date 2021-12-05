@@ -82,6 +82,37 @@ func Part1() string {
 	return fmt.Sprintf("Overlapping points: %d", overlapCount)
 }
 
+func Part2() string {
+	vents, err := getVents()
+	if err != nil {
+		panic(err)
+	}
+
+	coordinateCoverCount := make(map[coordinates]int)
+	for _, vent := range *vents {
+		coveredCoordinates, err := vent.getCoveredCoordinates()
+		if err == nil {
+			for _, coveredSpot := range *coveredCoordinates {
+				count, found := coordinateCoverCount[coveredSpot]
+				if !found {
+					coordinateCoverCount[coveredSpot] = 1
+				} else {
+					coordinateCoverCount[coveredSpot] = count + 1
+				}
+			}
+		}
+	}
+
+	overlapCount := 0
+	for _, value := range coordinateCoverCount {
+		if value > 1 {
+			overlapCount++
+		}
+	}
+
+	return fmt.Sprintf("Overlapping points: %d", overlapCount)
+}
+
 func getVents() (*[]*vent, error) {
 	file, fileErr := os.Open("day5/vent_coordinates.txt")
 	if fileErr != nil {
@@ -167,6 +198,27 @@ func (vent *vent) getHorizontalAndVerticalCoveredCoordinates() (*[]coordinates, 
 	yDiff := vent.end.y - vent.start.y
 
 	gradient, err := newHorizontalOrVerticalGradient(xDiff, yDiff)
+	if err != nil {
+		return nil, err
+	}
+
+	numberOfCoveredCoords := 1 + max(mod(xDiff), mod(yDiff))
+
+	coveredCoordinates := make([]coordinates, numberOfCoveredCoords)
+	coveredCoordinates[0] = *vent.start
+
+	for i := 1; i < numberOfCoveredCoords; i++ {
+		coveredCoordinates[i] = *gradient.getNext(&coveredCoordinates[i-1])
+	}
+
+	return &coveredCoordinates, nil
+}
+
+func (vent *vent) getCoveredCoordinates() (*[]coordinates, error) {
+	xDiff := vent.end.x - vent.start.x
+	yDiff := vent.end.y - vent.start.y
+
+	gradient, err := newGradient(xDiff, yDiff)
 	if err != nil {
 		return nil, err
 	}

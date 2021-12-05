@@ -118,6 +118,7 @@ func getVents() (*[]*vent, error) {
 	if fileErr != nil {
 		return nil, fileErr
 	}
+	defer file.Close()
 
 	var vents []*vent
 

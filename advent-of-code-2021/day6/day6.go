@@ -8,14 +8,87 @@ import (
 	"strings"
 )
 
-type lanternFish struct {
+const (
+	birthFrequencyDays = 7
+	daysUntilMaturity  = 2
+)
+
+type shoal struct {
+	groups *[]*shoalGroup
+}
+
+func newShoal() *shoal {
+	var groups []*shoalGroup
+	shoal := shoal{
+		groups: &groups,
+	}
+	return &shoal
+}
+
+func (shoal *shoal) addSingleFish(daysUntilOffspringDue int) {
+	shoal.addMultipleFish(daysUntilOffspringDue, 1)
+}
+
+func (shoal *shoal) addMultipleFish(daysUntilOffspringDue int, number int64) {
+	for _, group := range *shoal.groups {
+		if group.daysUntilOffspringDue == daysUntilOffspringDue {
+			group.add(number)
+			return
+		}
+	}
+	newGroup := shoalGroup{
+		daysUntilOffspringDue: daysUntilOffspringDue,
+		number:                number,
+	}
+	newGroups := append(*shoal.groups, &newGroup)
+	shoal.groups = &newGroups
+}
+
+func (shoal *shoal) advanceDay() {
+	var newbornFish int64 = 0
+	for _, group := range *shoal.groups {
+		newbornFish += group.advanceDay()
+	}
+	shoal.addMultipleFish(daysUntilMaturity+birthFrequencyDays-1, newbornFish)
+}
+
+func (shoal *shoal) getNumberOfFish() int64 {
+	var number int64 = 0
+	for _, group := range *shoal.groups {
+		number += group.number
+	}
+	return number
+}
+
+// A group is a collection of fish within the shoal that have the same number of days until their offspring is due. I
+// originally stored each fish as its own entity but this consumes a needlessly large amount of RAM for lots of
+// identical objects (and took a thousand years).
+type shoalGroup struct {
+	daysUntilOffspringDue int
+	number                int64
+}
+
+func (group *shoalGroup) add(number int64) {
+	group.number += number
+}
+
+func (group *shoalGroup) advanceDay() int64 {
+	if group.daysUntilOffspringDue == 0 {
+		group.daysUntilOffspringDue = birthFrequencyDays - 1
+		return group.number
+	}
+	group.daysUntilOffspringDue -= 1
+	return 0
+}
+
+type lanternfish struct {
 	daysUntilOffspringDue int
 }
 
-func (f *lanternFish) advanceDay() *lanternFish {
+func (f *lanternfish) advanceDay() *lanternfish {
 	if f.daysUntilOffspringDue == 0 {
 		f.daysUntilOffspringDue = 6
-		offspring := lanternFish{
+		offspring := lanternfish{
 			daysUntilOffspringDue: 8,
 		}
 		return &offspring
@@ -30,23 +103,29 @@ func Part1() string {
 		panic(err)
 	}
 
-	for i := 0; i < 80; i++ {
-		var offspring []*lanternFish
-		for _, f := range *fish {
-			fOffspring := f.advanceDay()
-			if fOffspring != nil {
-				offspring = append(offspring, fOffspring)
-			}
-		}
-		newShoal := append(*fish, offspring...)
-		fish = &newShoal
-	}
-
-	return fmt.Sprintf("Number of fish after 80 days: %d", len(*fish))
+	days := 80
+	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days))
 }
 
-func getInitialFish() (*[]*lanternFish, error) {
-	file, err := os.Open("day6/lantern_fish.csv")
+func Part2() string {
+	fish, err := getInitialFish()
+	if err != nil {
+		panic(err)
+	}
+
+	days := 256
+	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days))
+}
+
+func getNumberOfLanternfishAfterDays(shoal *shoal, days int) int64 {
+	for i := 0; i < days; i++ {
+		shoal.advanceDay()
+	}
+	return shoal.getNumberOfFish()
+}
+
+func getInitialFish() (*shoal, error) {
+	file, err := os.Open("day6/lanternfish.csv")
 	if err != nil {
 		return nil, err
 	}
@@ -54,29 +133,19 @@ func getInitialFish() (*[]*lanternFish, error) {
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
-	return createAllLanternFish(scanner.Text())
+	return createShoal(scanner.Text())
 }
 
-func createAllLanternFish(input string) (*[]*lanternFish, error) {
+func createShoal(input string) (*shoal, error) {
 	rawInputs := strings.Split(input, ",")
-	fish := make([]*lanternFish, len(rawInputs))
-	for index, input := range rawInputs {
-		f, err := createSingleLanternFish(input)
+	shoal := newShoal()
+
+	for _, input := range rawInputs {
+		daysUntilOffspringDue, err := strconv.Atoi(input)
 		if err != nil {
 			return nil, err
 		}
-		fish[index] = f
+		shoal.addSingleFish(daysUntilOffspringDue)
 	}
-	return &fish, nil
-}
-
-func createSingleLanternFish(input string) (*lanternFish, error) {
-	daysUntilOffspringDue, err := strconv.Atoi(input)
-	if err != nil {
-		return nil, err
-	}
-	fish := lanternFish{
-		daysUntilOffspringDue: daysUntilOffspringDue,
-	}
-	return &fish, nil
+	return shoal, nil
 }

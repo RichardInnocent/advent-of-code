@@ -34,6 +34,7 @@ func main() {
 	execute(5, 1, day5.Part1)
 	execute(5, 2, day5.Part2)
 	execute(6, 1, day6.Part1)
+	execute(6, 2, day6.Part2)
 }
 
 func execute(day, part int, runnable fn) {

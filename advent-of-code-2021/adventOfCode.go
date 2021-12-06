@@ -6,6 +6,7 @@ import (
 	"advent-of-code-2021/day3"
 	"advent-of-code-2021/day4"
 	"advent-of-code-2021/day5"
+	"advent-of-code-2021/day6"
 	"fmt"
 )
 
@@ -32,6 +33,7 @@ func main() {
 	execute(4, 2, day4.Part2)
 	execute(5, 1, day5.Part1)
 	execute(5, 2, day5.Part2)
+	execute(6, 1, day6.Part1)
 }
 
 func execute(day, part int, runnable fn) {

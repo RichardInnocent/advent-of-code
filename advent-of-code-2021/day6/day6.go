@@ -81,22 +81,6 @@ func (group *shoalGroup) advanceDay() int64 {
 	return 0
 }
 
-type lanternfish struct {
-	daysUntilOffspringDue int
-}
-
-func (f *lanternfish) advanceDay() *lanternfish {
-	if f.daysUntilOffspringDue == 0 {
-		f.daysUntilOffspringDue = 6
-		offspring := lanternfish{
-			daysUntilOffspringDue: 8,
-		}
-		return &offspring
-	}
-	f.daysUntilOffspringDue--
-	return nil
-}
-
 func Part1() string {
 	fish, err := getInitialFish()
 	if err != nil {

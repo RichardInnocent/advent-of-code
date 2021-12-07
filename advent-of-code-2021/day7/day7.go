@@ -78,14 +78,6 @@ func max(values *[]int) (int, bool) {
 	return *max, true
 }
 
-func midpoint(x, y int) int {
-	diff := abs(x - y)
-	if x > y {
-		return y + diff
-	}
-	return x + diff
-}
-
 func sumAbsoluteDifferences(array *[]int, point int) int {
 	difference := 0
 	for _, value := range *array {

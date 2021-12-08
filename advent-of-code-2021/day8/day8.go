@@ -46,10 +46,10 @@ func (display display) getSignalPatternsForDecodedValue(number int) (signalPatte
 	return ""
 }
 
-func Part1() string {
-	file, err := os.Open("day8/signal_patterns.txt")
+func Part1(filePath string) (string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read signal patterns file. %w", err)
 	}
 	defer file.Close()
 
@@ -63,13 +63,13 @@ func Part1() string {
 			}
 		}
 	}
-	return fmt.Sprintf("Number of 1, 4, 7 or 8s in the output: %d", numberOfKnownValuesInOutput)
+	return fmt.Sprintf("Number of 1, 4, 7 or 8s in the output: %d", numberOfKnownValuesInOutput), nil
 }
 
-func Part2() string {
-	file, err := os.Open("day8/signal_patterns.txt")
+func Part2(filePath string) (string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read signal patterns file. %w", err)
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -79,7 +79,7 @@ func Part2() string {
 		entry := parseEntry(scanner.Text())
 		sumOutputs += entry.decipher()
 	}
-	return fmt.Sprintf("Sum of outputs: %d", sumOutputs)
+	return fmt.Sprintf("Sum of outputs: %d", sumOutputs), nil
 }
 
 func parseEntry(rawEntry string) (d display) {

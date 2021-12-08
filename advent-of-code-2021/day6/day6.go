@@ -81,24 +81,24 @@ func (group *shoalGroup) advanceDay() int64 {
 	return 0
 }
 
-func Part1() string {
-	fish, err := getInitialFish()
+func Part1(filePath string) (string, error) {
+	fish, err := getInitialFish(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to retrieve lanternfish. %w", err)
 	}
 
 	days := 80
-	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days))
+	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days)), nil
 }
 
-func Part2() string {
-	fish, err := getInitialFish()
+func Part2(filePath string) (string, error) {
+	fish, err := getInitialFish(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to retrieve lanternfish. %w", err)
 	}
 
 	days := 256
-	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days))
+	return fmt.Sprintf("Number of fish after %d days: %d", days, getNumberOfLanternfishAfterDays(fish, days)), nil
 }
 
 func getNumberOfLanternfishAfterDays(shoal *shoal, days int) int64 {
@@ -108,10 +108,10 @@ func getNumberOfLanternfishAfterDays(shoal *shoal, days int) int64 {
 	return shoal.getNumberOfFish()
 }
 
-func getInitialFish() (*shoal, error) {
-	file, err := os.Open("day6/lanternfish.csv")
+func getInitialFish(filePath string) (*shoal, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open lanternfish file %q. %w", filePath, err)
 	}
 	defer file.Close()
 

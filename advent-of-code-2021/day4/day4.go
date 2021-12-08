@@ -19,28 +19,28 @@ type board struct {
 	elements *[]*boardElement
 }
 
-func Part1() string {
-	inputs, boards, err := readInputFile()
+func Part1(filePath string) (string, error) {
+	inputs, boards, err := readInputFile(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read input file. %w", err)
 	}
 
 	for _, input := range *inputs {
 		for _, board := range *boards {
 			hasWon, winningScore := board.mark(input)
 			if hasWon {
-				return fmt.Sprintf("Winning score: %d", winningScore)
+				return fmt.Sprintf("Winning score: %d", winningScore), nil
 			}
 		}
 	}
 
-	return "No board will win"
+	return "No board will win", nil
 }
 
-func Part2() string {
-	inputs, boards, err := readInputFile()
+func Part2(filePath string) (string, error) {
+	inputs, boards, err := readInputFile(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read input file. %w", err)
 	}
 
 	remainingBoards := *boards
@@ -54,7 +54,7 @@ func Part2() string {
 			hasWon, winningScore := board.mark(input)
 			if hasWon {
 				if boardsNotWon == 1 {
-					return fmt.Sprintf("Winning score: %d", winningScore)
+					return fmt.Sprintf("Winning score: %d", winningScore), nil
 				}
 				remainingBoards[index] = nil
 				boardsNotWon--
@@ -62,13 +62,13 @@ func Part2() string {
 		}
 	}
 
-	return "No board will win"
+	return "No board will win", nil
 }
 
-func readInputFile() (*[]int, *[]*board, error) {
-	file, err := os.Open("day4/game.txt")
+func readInputFile(filePath string) (*[]int, *[]*board, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("failed to open input file %q. %w", filePath, err)
 	}
 	defer file.Close()
 
@@ -76,12 +76,12 @@ func readInputFile() (*[]int, *[]*board, error) {
 
 	drawnNumbers, err := getDrawnNumbers(scanner)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("failed to read drawn numbers. %w", err)
 	}
 
 	boards, err := createBoards(scanner)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("failed to create game boards. %w", err)
 	}
 
 	return drawnNumbers, boards, nil
@@ -99,7 +99,7 @@ func stringArrayToIntArray(stringArray *[]string) (*[]int, error) {
 	for index, value := range *stringArray {
 		number, err := strconv.Atoi(value)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to convert value %q to integer. %w", value, err)
 		}
 		result[index] = number
 	}
@@ -111,7 +111,7 @@ func createBoards(scanner *bufio.Scanner) (*[]*board, error) {
 	for {
 		board, err := createNextBoard(scanner)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to create board. %w", err)
 		}
 		if board == nil {
 			return &boards, nil
@@ -142,7 +142,7 @@ func createNextBoard(scanner *bufio.Scanner) (*board, error) {
 
 	boardValues, err := stringArrayToIntArray(&rawBoardValues)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to convert values to board. %w", err)
 	}
 	board := newBoard(boardValues)
 	return board, nil

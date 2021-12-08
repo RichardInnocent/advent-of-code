@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-func Part1() string {
-	positions, err := getCrabPositions()
+func Part1(filePath string) (string, error) {
+	positions, err := getCrabPositions(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read crab positions. %w", err)
 	}
 
 	min, _ := min(positions)
@@ -26,13 +26,13 @@ func Part1() string {
 			bestPosition = i
 		}
 	}
-	return fmt.Sprintf("Best position: %d. Fuel required: %d", bestPosition, *fuelRequired)
+	return fmt.Sprintf("Best position: %d. Fuel required: %d", bestPosition, *fuelRequired), nil
 }
 
-func Part2() string {
-	positions, err := getCrabPositions()
+func Part2(filePath string) (string, error) {
+	positions, err := getCrabPositions(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read crab positions. %w", err)
 	}
 
 	min, _ := min(positions)
@@ -47,7 +47,7 @@ func Part2() string {
 			bestPosition = i
 		}
 	}
-	return fmt.Sprintf("Best position: %d. Fuel required: %d", bestPosition, *fuelRequired)
+	return fmt.Sprintf("Best position: %d. Fuel required: %d", bestPosition, *fuelRequired), nil
 }
 
 func min(values *[]int) (int, bool) {
@@ -109,10 +109,10 @@ func abs(value int) int {
 	return value
 }
 
-func getCrabPositions() (*[]int, error) {
-	file, err := os.Open("day7/crab_positions.csv")
+func getCrabPositions(filePath string) (*[]int, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open crab file %q. %w", filePath, err)
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)

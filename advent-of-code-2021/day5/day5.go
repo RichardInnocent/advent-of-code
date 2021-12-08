@@ -51,10 +51,10 @@ func (grad *gradient) getNext(current *coordinates) *coordinates {
 	return &nextCoordinates
 }
 
-func Part1() string {
-	vents, err := getVents()
+func Part1(filePath string) (string, error) {
+	vents, err := getVents(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to retrieve vents. %w", err)
 	}
 
 	coordinateCoverCount := make(map[coordinates]int)
@@ -79,13 +79,13 @@ func Part1() string {
 		}
 	}
 
-	return fmt.Sprintf("Overlapping points: %d", overlapCount)
+	return fmt.Sprintf("Overlapping points: %d", overlapCount), nil
 }
 
-func Part2() string {
-	vents, err := getVents()
+func Part2(filePath string) (string, error) {
+	vents, err := getVents(filePath)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to retrieve vents. %w", err)
 	}
 
 	coordinateCoverCount := make(map[coordinates]int)
@@ -110,11 +110,11 @@ func Part2() string {
 		}
 	}
 
-	return fmt.Sprintf("Overlapping points: %d", overlapCount)
+	return fmt.Sprintf("Overlapping points: %d", overlapCount), nil
 }
 
-func getVents() (*[]*vent, error) {
-	file, fileErr := os.Open("day5/vent_coordinates.txt")
+func getVents(filePath string) (*[]*vent, error) {
+	file, fileErr := os.Open(filePath)
 	if fileErr != nil {
 		return nil, fileErr
 	}
@@ -126,7 +126,7 @@ func getVents() (*[]*vent, error) {
 	for scanner.Scan() {
 		vent, ventErr := newVent(scanner.Text())
 		if ventErr != nil {
-			return nil, ventErr
+			return nil, fmt.Errorf("failed to initialise vent. %w", ventErr)
 		}
 		vents = append(vents, vent)
 	}

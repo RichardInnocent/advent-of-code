@@ -2,6 +2,7 @@ package day2
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -24,16 +25,19 @@ type ReUnderstoodPosition struct {
 	aim        int
 }
 
-func Part1() string {
-	commands := getCommands()
+func Part1(filePath string) (string, error) {
+	commands, err := getCommands(filePath)
+	if err != nil {
+		return "", err
+	}
 	position := executeCommandsAndDetermineFinalPosition(commands)
-	return "depth x horizontal = " + strconv.Itoa(position.depth*position.horizontal)
+	return fmt.Sprintf("depth x horizontal = %d", position.depth*position.horizontal), nil
 }
 
-func getCommands() *[]string {
-	file, readError := os.Open("day2/commands.csv")
+func getCommands(filePath string) (*[]string, error) {
+	file, readError := os.Open(filePath)
 	if readError != nil {
-		panic(readError)
+		return nil, fmt.Errorf("could not read input file %q: %w", filePath, readError)
 	}
 	defer file.Close()
 
@@ -44,7 +48,7 @@ func getCommands() *[]string {
 		commands = append(commands, scanner.Text())
 	}
 
-	return &commands
+	return &commands, nil
 }
 
 func executeCommandsAndDetermineFinalPosition(commands *[]string) *Position {
@@ -80,10 +84,13 @@ func updatePositionFromCommand(position *Position, command string) {
 	}
 }
 
-func Part2() string {
-	commands := getCommands()
+func Part2(filePath string) (string, error) {
+	commands, readError := getCommands(filePath)
+	if readError != nil {
+		return "", fmt.Errorf("could not read input file %q: %w", filePath, readError)
+	}
 	position := executeReUnderstoodCommandsAndDetermineFinalPosition(commands)
-	return "depth x horizontal = " + strconv.Itoa(position.depth*position.horizontal)
+	return fmt.Sprintf("depth x horizontal = %d", position.depth*position.horizontal), nil
 }
 
 func executeReUnderstoodCommandsAndDetermineFinalPosition(commands *[]string) *ReUnderstoodPosition {

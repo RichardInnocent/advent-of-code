@@ -7,18 +7,24 @@ import (
 	"strconv"
 )
 
-func Part1() string {
-	measurements := getMeasurements()
-	return fmt.Sprintf("Increases: %d", numberOfIncreases(measurements))
+func Part1(filePath string) (string, error) {
+	measurements, err := getMeasurements(filePath)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("Increases: %d", numberOfIncreases(measurements)), nil
 }
 
-func Part2() string {
-	measurements := getMeasurements()
-	return fmt.Sprintf("Increases: %d", numberOfIncreasesInSlidingWindow(measurements))
+func Part2(filePath string) (string, error) {
+	measurements, err := getMeasurements(filePath)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("Increases: %d", numberOfIncreasesInSlidingWindow(measurements)), nil
 }
 
-func getMeasurements() *[]int {
-	file, err := os.Open("day1/measurements.csv")
+func getMeasurements(filePath string) (*[]int, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
 	}
@@ -30,12 +36,12 @@ func getMeasurements() *[]int {
 	for scanner.Scan() {
 		value, err := strconv.Atoi(scanner.Text())
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("failed to convert measurement to integer. %w", err)
 		}
 		measurements = append(measurements, value)
 	}
 
-	return &measurements
+	return &measurements, nil
 }
 
 func numberOfIncreases(measurements *[]int) int {

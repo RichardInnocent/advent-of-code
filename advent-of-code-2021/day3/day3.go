@@ -8,10 +8,14 @@ import (
 	"os"
 )
 
-func Part1() string {
-	diagnosticEntries, err := toBoolArrays(getDiagnosticOutput())
+func Part1(filePath string) (string, error) {
+	rawDiagnosticEntries, fileError := getDiagnosticOutput(filePath)
+	if fileError != nil {
+		return "", fmt.Errorf("Failed to read diagnostic output. %w", fileError)
+	}
+	diagnosticEntries, err := toBoolArrays(rawDiagnosticEntries)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read diagnostic output. %w", err)
 	}
 
 	rawGammaRate := getRawGammaRate(diagnosticEntries)
@@ -20,13 +24,17 @@ func Part1() string {
 	gammaRate := boolsToInt(rawGammaRate)
 	epsilonRate := boolsToInt(rawEpsilonRate)
 
-	return fmt.Sprintf("Power consumption: %d", gammaRate*epsilonRate)
+	return fmt.Sprintf("Power consumption: %d", gammaRate*epsilonRate), nil
 }
 
-func Part2() string {
-	diagnosticEntries, err := toBoolArrays(getDiagnosticOutput())
+func Part2(filePath string) (string, error) {
+	rawDiagnosticEntries, fileError := getDiagnosticOutput(filePath)
+	if fileError != nil {
+		return "", fmt.Errorf("Failed to read diagnostic output. %w", fileError)
+	}
+	diagnosticEntries, err := toBoolArrays(rawDiagnosticEntries)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to read diagnostic output. %w", err)
 	}
 
 	rawOxygenGeneratorRating := getRawOxygenGeneratorRatings(diagnosticEntries)
@@ -35,13 +43,13 @@ func Part2() string {
 	oxygenGeneratorRating := boolsToInt(rawOxygenGeneratorRating)
 	co2ScrubberRating := boolsToInt(rawCO2ScrubberRating)
 
-	return fmt.Sprintf("Life support rating: %d", oxygenGeneratorRating*co2ScrubberRating)
+	return fmt.Sprintf("Life support rating: %d", oxygenGeneratorRating*co2ScrubberRating), nil
 }
 
-func getDiagnosticOutput() *[]string {
-	file, readError := os.Open("day3/diagnostics.csv")
+func getDiagnosticOutput(filePath string) (*[]string, error) {
+	file, readError := os.Open(filePath)
 	if readError != nil {
-		panic(readError)
+		return nil, fmt.Errorf("failed to read diagnostic file. %w", readError)
 	}
 	defer file.Close()
 
@@ -52,7 +60,7 @@ func getDiagnosticOutput() *[]string {
 		commands = append(commands, scanner.Text())
 	}
 
-	return &commands
+	return &commands, nil
 }
 
 func toBoolArrays(diagnosticEntries *[]string) (*[][]bool, error) {

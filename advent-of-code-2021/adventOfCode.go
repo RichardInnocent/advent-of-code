@@ -2,6 +2,7 @@ package main
 
 import (
 	"advent-of-code-2021/day1"
+	"advent-of-code-2021/day10"
 	"advent-of-code-2021/day2"
 	"advent-of-code-2021/day3"
 	"advent-of-code-2021/day4"
@@ -34,6 +35,7 @@ func main() {
 	execute(8, 2, day8.Part2, "day8/signal_patterns.txt")
 	execute(9, 1, day9.Part1, "day9/heightmap.txt")
 	execute(9, 2, day9.Part2, "day9/heightmap.txt")
+	execute(10, 1, day10.Part1, "day10/input.txt")
 }
 
 func execute(day, part int, task fn, filePath string) {

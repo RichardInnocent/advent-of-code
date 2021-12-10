@@ -33,6 +33,7 @@ func main() {
 	execute(8, 1, day8.Part1, "day8/signal_patterns.txt")
 	execute(8, 2, day8.Part2, "day8/signal_patterns.txt")
 	execute(9, 1, day9.Part1, "day9/heightmap.txt")
+	execute(9, 2, day9.Part2, "day9/heightmap.txt")
 }
 
 func execute(day, part int, task fn, filePath string) {

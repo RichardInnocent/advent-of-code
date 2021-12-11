@@ -104,27 +104,27 @@ func (grid octopusGrid) positionToLeftExists(startLocation int) bool {
 
 func (grid *octopusGrid) step() (flashes int) {
 	for i := 0; i < len(grid.octopuses); i++ {
-		flashes += grid.incrementEnergyAtLocation(i)
+		grid.incrementEnergyAtLocation(i)
 	}
 	for _, octopus := range grid.octopuses {
-		octopus.resetIfFlashed()
+		if octopus.resetIfFlashed() {
+			flashes++
+		}
 	}
 	return
 }
 
-func (grid *octopusGrid) incrementEnergyAtLocation(location int) (flashes int) {
+func (grid *octopusGrid) incrementEnergyAtLocation(location int) {
 	octopus := grid.octopuses[location]
 	flashed := octopus.incrementEnergyLevel()
 	if !flashed {
 		return
 	}
 
-	flashes += 1
-
 	for _, direction := range allDirections {
 		neighbourLocation, neighbourExists := grid.getLocationOfOctopusFromNeighbourInDirection(location, direction)
 		if neighbourExists {
-			flashes += grid.incrementEnergyAtLocation(neighbourLocation)
+			grid.incrementEnergyAtLocation(neighbourLocation)
 		}
 	}
 
@@ -143,6 +143,23 @@ func Part1(filePath string) (string, error) {
 	}
 
 	return fmt.Sprintf("Total number of flashes: %d", numberOfFlashes), nil
+}
+
+func Part2(filePath string) (string, error) {
+	grid, err := readOctopuses(filePath)
+	if err != nil {
+		return "", fmt.Errorf("could not retrieve octopuses: %w", err)
+	}
+
+	numberOfSteps := 1
+	for {
+		if grid.step() == len(grid.octopuses) {
+			break
+		}
+		numberOfSteps++
+	}
+
+	return fmt.Sprintf("Total number of steps required to synchronise: %d", numberOfSteps), nil
 }
 
 func readOctopuses(filePath string) (octopusGrid, error) {

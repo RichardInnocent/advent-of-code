@@ -38,7 +38,8 @@ func main() {
 	execute(9, 2, day9.Part2, "day9/heightmap.txt")
 	execute(10, 1, day10.Part1, "day10/input.txt")
 	execute(10, 2, day10.Part2, "day10/input.txt")
-	execute(10, 2, day11.Part1, "day11/octopuses.txt")
+	execute(11, 1, day11.Part1, "day11/octopuses.txt")
+	execute(11, 2, day11.Part2, "day11/octopuses.txt")
 }
 
 func execute(day, part int, task fn, filePath string) {
